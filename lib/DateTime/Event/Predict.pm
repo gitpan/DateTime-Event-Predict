@@ -23,12 +23,10 @@ use Carp qw(carp croak confess);
 use Scalar::Util;
 
 use POSIX qw(ceil);
-use Data::Dumper;
-#use Smart::Comments;
 
 use DateTime::Event::Predict::Profile qw(:buckets);
 
-our $VERSION = '0.01';                                                                                     
+our $VERSION = '0.01_02';
 
 
 #===============================================================================#

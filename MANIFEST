@@ -6,10 +6,7 @@ META.yml
 Makefile.PL
 README
 TODO
-inc
-inc/Module
 inc/Module/AutoInstall.pm
-inc/Module/Install
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
@@ -20,13 +17,8 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-lib
-lib/DateTime
-lib/DateTime/Event
-lib/DateTime/Event/Predict
 lib/DateTime/Event/Predict.pm
 lib/DateTime/Event/Predict/Profile.pm
-t
 t/00-load.t
 t/01-basics.t
 t/02-profile.t

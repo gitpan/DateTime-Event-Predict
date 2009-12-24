@@ -7,6 +7,7 @@ license  'perl';
 
 no_index directory => 'research';
 no_index file => 'IDEAS';
+#no_index directory => 'lib/DateTime/Event/Predict';
 
 build_requires 'Test::More';
 requires       'DateTime'  => 0;
@@ -16,4 +17,3 @@ requires       'Scalar::Util';
 auto_install;
 
 WriteAll;
-
