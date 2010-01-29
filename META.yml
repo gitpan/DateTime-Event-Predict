@@ -17,6 +17,7 @@ name: DateTime-Event-Predict
 no_index:
   directory:
     - inc
+    - lib/DateTime/Event/Predict
     - research
     - t
   file:

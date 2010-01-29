@@ -6,8 +6,8 @@ author   'Brian Hann <brian.hann@gmail.com>';
 license  'perl';
 
 no_index directory => 'research';
-no_index file => 'IDEAS';
-#no_index directory => 'lib/DateTime/Event/Predict';
+no_index file      => 'IDEAS';
+no_index directory => 'lib/DateTime/Event/Predict';
 
 build_requires 'Test::More';
 requires       'DateTime'  => 0;

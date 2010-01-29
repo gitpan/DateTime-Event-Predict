@@ -1,6 +1,6 @@
 #!perl
 
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 BEGIN { use_ok('DateTime::Event::Predict::Profile', qw(:buckets)) };
 
@@ -16,6 +16,19 @@ isa_ok( $profile, 'DateTime::Event::Predict::Profile' );
 my @buckets = $profile->buckets();
 
 ok( @buckets, 'Buckets for preset profile are defined' );
+
+# Profile with incorrect bucket name
+TODO: {
+	todo_skip "Make sure Profile fails properly with bad bucket name", 1;
+	
+	$profile = new DateTime::Event::Predict::Profile(
+		distinct_buckets => ['years'],
+	);
+	
+	isa_ok( $profile, 'DateTime::Event::Predict::Profile' );
+};
+
+isa_ok( $profile, 'DateTime::Event::Predict::Profile' );
 
 # Profile with distinct buckets
 $profile = new DateTime::Event::Predict::Profile(

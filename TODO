@@ -1,21 +1,22 @@
 TODO list for Perl module DateTime::Even::Predict
 
+1/27/2009
+* Profile.pm needs to check bucket names that get passed in to see if they actually exist. Right now
+  it tries to clone them and dies ungracefully.
+
 12/22/2009
 * Can we combine the interval and distinct buckets into one full bucket list? The names should mean there's no
   collisions (just confusion, maybe too much) and the 'type' identifier says how to use it. Probably not a
   good idea.
 * train() needs to reset the bucket values each time it's called; right now they'll just increment endlessly
+  -- This should be done but I'm not 100% sure.
 
 12/18/2009
-* We definitely need to add the interval_buckets back in. Right now there's no way
-  to predict something like the Chiefs next Superbowl victory. With the years 1966
-  and 1969 you get a mean of 1967.5 and a standard deviation of 1.5. We have to
-  use intervals to find the next date.
 * Is there a way to use import() outside of a BEGIN block so that export tags can be imported?
 * Change new() and predict() so options can be globally set in the object and overridden in
   each call to predict().
 * We could create a bucket for is_weekend_day and create a custom callback for the accessor.
-  We'd have to do duration differently, though. 
+  We'd have to do duration differently, though.
 
 12/17/2009
 * Finish writing up pod so module can be alpha-released on CPAN
@@ -24,7 +25,7 @@ TODO list for Perl module DateTime::Even::Predict
   actually modifying dates we are given. OR MAYBE NOT, because of truncate()?
 
 12/16/2009
-* Due to possible DOS attack that can be done through very large duration operations (thousands
+* Due to possible DoS attack that can be done through very large duration operations (thousands
   of years in the future, etc), we'll need to add some sort of protection, I think.
 
 ??/??/????

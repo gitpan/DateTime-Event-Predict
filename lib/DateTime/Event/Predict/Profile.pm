@@ -252,7 +252,7 @@ sub new {
     my %opts  = @_;
     
     validate(@_, {
-    	profile          => { type => SCALAR,   optional => 1 }, # Preset profile
+    	profile          => { type => SCALAR,   optional => 1 }, # Preset profile alias
     	distinct_buckets => { type => ARRAYREF, optional => 1 }, # Custom distinct bucket definitions
     	interval_buckets => { type => ARRAYREF, optional => 1 }, # Custom interval bucket definitions
     });
@@ -265,7 +265,7 @@ sub new {
     $self->{interval_buckets} = {};
     $self->{distinct_buckets} = {};
     
-    # Make sure we either have a preset profile name, or one of the bucket options set
+    # Make sure we either have a preset profile alias, or one of the bucket options set
     if ( $opts{'profile'} ) {
     	if ( exists $PROFILES{ $opts{'profile'} } ) {
     		$opts{'distinct_buckets'} = $PROFILES{ $opts{'profile'} }->{distinct_buckets};
@@ -335,7 +335,7 @@ sub buckets {
 
 # Return either the full list of the distinct buckets or a slice of the buckets according to a list of names
 # sent in
-sub distinct_buckets {
+sub _distinct_buckets {
 	my $self    = shift;
 	my @buckets = @_;
 	
@@ -352,7 +352,7 @@ sub distinct_buckets {
 
 # Return either the full list of the interval buckets or a slice of the buckets according to a list of names
 # sent in
-sub interval_buckets {
+sub _interval_buckets {
 	my $self    = shift;
 	my @buckets = @_;
 	
@@ -483,17 +483,165 @@ __END__
 =head1 NAME
 
 DateTime::Event::Predict::Profile - Provides default profiles for use with DateTime::Event::Predict,
-and mechanisms for making custom profiles
+and mechanisms for making custom profiles.
 
 =head1 SYNOPSIS
 
 	use DateTime::Event::Predict::Profile;
 
 	my $profile = new DateTime::Event::Predict::Profile(
-		buckets => [qw/ day_of_month /],
+		distinct_buckets => [qw/ day_of_month /],
 	);
 
 	$profile->bucket('day_of_month')->off(1);
+
+=head1 METHODS
+
+=head2 new
+
+Constructor
+
+	# Pre-made profile
+	my $profile = DateTime::Event::Predict::Profile->new(
+		profile => 'holiday'
+	);
+
+	# Custom profile with the buckets you want
+	my $profile = DateTime::Event::Predict::Profile->new(
+		distinct_buckets => ['year'],
+		interval_buckets => ['years']
+	);
+
+	# Define profile when creating DTP object
+	my $dtp = DateTime::Event::Predict::Profile->new(
+		profile => {
+			profile => 'holiday',
+		},
+	);
+
+	my $dtp = DateTime::Event::Predict::Profile->new(
+		profile => {
+			distinct_buckets => ['month'],
+		},
+	);
+
+A profile tells DTP how to make predictions, that is, which parts of dates to look at in gathering statistics about them. 
+
+=head3 Buckets
+
+A bucket, for lack of better name, is a collection of date-parts. Take any distinct part of a date, say the seconds, or
+the hours, or the quarter of the year, or even whether it's a weekday or not. A bucket in DTP is way of gathering data
+regarding any certain date part from the list of dates you supply to it. If you provide a profile that has the 'year'
+bucket enabled, then for every date you supply DTP will make a note of the year of every supplied date and use the
+statistics of how the years relate in order to make predictions. If the 'year' bucket is turned off then the year of
+the supplied dates will be ignored! DTP only pays attention to the buckets you enable.
+
+In addition to buckets that record distinct date parts like years and months, which we call "distinct buckets," there are
+"interval buckets," or buckets that define how each date in the list of supplied dates relates to the date preceding and
+following it. If you turn on the 'months' interval bucket, DTP will look at how many months there are in the interval
+between each date and the date before and after it, then use that for predictions. For instance, if every date you supply
+is exactly 3 months after the one before it, DTP won't make a prediction that isn't also exactly 3 months after the
+latest date you supplied.
+
+=head3 Available Buckets
+
+	# Distinct buckets
+	year
+	quarter                  # Alias: quarter_of_year
+	month                    # Alias: month_of_year
+	week_number              # Alias: week_of_year (Weak of year, from 1..53)
+	day_of_year
+	week_of_month            
+	weekday
+	day_of_quarter
+	day_of_month             # Alias: day
+	day_of_week
+	hour                     # Hour of day
+	minute                   # Alias: minute_of_hour
+	second                   # Alias: second_of_minute
+	nanosecond               
+	
+	# Interval buckets
+	years
+	months
+	weeks
+	days
+	hours
+	minutes
+	seconds
+	nanoseconds
+	
+If you look closely you'll notice that these buckets are the same as the accessors to get information out of a
+DateTime or a DateTime::Duration object. Well that's exactly what they are.
+
+=head2 bucket
+
+Arguments: $bucket_name
+
+	# Retrieve bucket
+	my $bucket = $profile->bucket('day_of_month');
+
+	# Use bucket accessor methods
+	$bucket->off(1);
+	$profile->bucket('day_of_month')->off(1);
+
+Return value: DateTime::Event::Predict::Bucket
+
+Retrieve a bucket object by its name. If no bucket name is provided or the bucket is not currently enabled in the profile C<bucket()> will return undef.
+
+=head2 buckets
+
+Arguments: @bucket_names
+
+	# All buckets
+	my @buckets = $profile->buckets();
+
+	# Some buckets
+	my @buckets = $profile->buckets('day_of_month', 'year');
+	
+	foreach my $bucket (@buckets) {
+		$bucket->on(0);
+	}
+	
+Fetches back a list of buckets by their names. If no names are provided all buckets are returned.
+
+=head1 BUCKET METHODS
+
+Methods that you can use on profile buckets
+
+=head2 on
+
+Arguments: 1 | 0
+
+Tell whether a bucket is enabled or not (on or off), or optionall turn the bucket on or off.
+
+	# Is it on or off?
+	if ( $bucket->on ) {
+		print "It's on!";
+	}
+	
+	# Turn it on
+	$bucket->on(1);
+	
+	# Turn it off
+	$bucket->on(0);
+	
+=head2 off
+
+Arguments: 1 | 0
+
+This is just an inversion of C<on()>.
+
+	# Is it on or off?
+	if ( $bucket->off ) {
+		print "It's off!";
+	}
+
+	# Turn it off
+	$bucket->off(1);
+	
+	# Turn it on
+	$bucket->off(0);
 
 =head1 AUTHOR
 
@@ -545,7 +693,5 @@ under the same terms as Perl itself.
 =head1 SEE ALSO
 
 L<DateTime::Event::Predict>, L<DateTime>
-
-=back
 
 =cut
