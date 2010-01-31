@@ -8,7 +8,7 @@ use DateTime::Event::Predict::Profile;
 
 my $dtp = DateTime::Event::Predict->new(
 	profile => {
-		distinct_buckets => [qw/ day_of_week /],
+		interval_buckets => ['days'],
 	},
 );
 
